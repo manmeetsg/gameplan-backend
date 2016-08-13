@@ -3,6 +3,9 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 
+// Security
+import session from 'express-session';
+
 import apiRouter from './router';
 
 // DB Setup
@@ -19,6 +22,13 @@ app.use(cors());
 // enable json message body for posting data to API
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// Security
+app.use(session({
+  secret: 'gameplan secret key',
+  resave: false,
+  saveUninitialized: true,
+}));
 
 // default index route
 app.get('/', (req, res) => {
