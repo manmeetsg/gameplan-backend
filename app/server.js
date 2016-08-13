@@ -1,6 +1,14 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import mongoose from 'mongoose';
+
+import apiRouter from './router';
+
+// DB Setup
+const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/gameplan';
+mongoose.connect(mongoURI);
+mongoose.Promise = global.Promise;
 
 // initialize
 const app = express();
@@ -12,11 +20,12 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-
 // default index route
 app.get('/', (req, res) => {
-  res.send('hi');
+  res.send('Welcome to the backend.');
 });
+
+app.use('/api', apiRouter);
 
 // START THE SERVER
 // =============================================================================
