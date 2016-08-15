@@ -2,7 +2,7 @@ import Group from '../models/group_model';
 import User from '../models/user_model';
 
 export const getGroups = (req, res) => {
-  const netID = req.session.auth.netid;
+  const netID = req.user.netID;
 
   User.findOne({ netID })
   .populate('group')

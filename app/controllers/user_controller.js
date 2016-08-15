@@ -1,5 +1,9 @@
 import User from '../models/user_model';
+import jwt from 'jwt-simple';
+import dotenv from 'dotenv';
+dotenv.config({ silent: true });
 
+// Import CAS authentication
 import CAS from '../auth/cas';
 const cas = new CAS({
   base_url: 'https://login.dartmouth.edu/cas',
@@ -7,57 +11,52 @@ const cas = new CAS({
   version: 2.0,
 });
 
+// encodes a new token for a user object
+function tokenForUser(user) {
+  const timestamp = new Date().getTime();
+  return jwt.encode({ sub: user.id, iat: timestamp }, process.env.SECRET);
+}
+
 export const login = (req, res) => {
-  // Authenticate
-  if (req.session.auth && req.session.auth.netid) {
-    // Already authenticated
-  } else if (req.body.ticket) {
-    // Validate with CAS server
+  console.log('Test');
+  if (req.body.ticket) {
     cas.validate(req.body.ticket, (err, status, username, extended) => {
       if (err) {
         if (String(err).indexOf('INVALID_TICKET') !== -1) {
-          res.json({ status: 'error', message: 'Invalid ticket.' });
+          res.status(400).json({ status: 'error', message: 'Invalid ticket.' });
         } else {
-          res.json({ status: 'error', message: err });
+          res.status(400).json({ status: 'error', message: err });
         }
       } else {
         // Generate session code for authentication on backend
-        req.session.regenerate(err => {
-          if (err) console.log(err);
+        const netID = extended.attributes.netid;
+        User.findOne({ netID })
+        .then(existing => {
+          if (!existing) {
+            // Create user
+            const user = new User();
+            user.name = extended.attributes.name;
+            user.netID = netID;
 
-          // the auth object contains {name, username, netid} fields
-          req.session.auth = extended.attributes;
-
-          // Create user
-          const netID = req.session.auth.netid;
-          User.findOne({ netID })
-          .then(existing => {
-            if (!existing) {
-              // Create user
-              const user = new User();
-              user.name = req.session.auth.name;
-              user.netID = netID;
-
-              user.save()
-              .then(result => {
-                res.json({ status: 'success', message: 'User created.' });
-              })
-              .catch(err => {
-                console.log(err);
-              });
-            } else {
-              // User exists, redirect to main page
-              res.json({ status: 'success', message: 'Logged in.' });
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          });
+            user.save()
+            .then(result => {
+              res.send({ token: tokenForUser(user) });
+            })
+            .catch(err => {
+              res.status(400).json({ status: 'error', message: err });
+            });
+          } else {
+            // User exists, redirect to main page
+            res.send({ token: tokenForUser(existing) });
+          }
+        })
+        .catch(err => {
+          res.status(400).json({ status: 'error', message: err });
         });
       }
     });
   } else {
-    res.json({ status: 'error', message: 'Error.  Must contain ticket.' });
+    res.status(400).json({ status: 'error', message: 'Did not have ticket.' });
   }
 };
 

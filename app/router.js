@@ -1,13 +1,7 @@
 import { Router } from 'express';
 import * as Users from './controllers/user_controller';
 import * as Groups from './controllers/group_controller';
-
-import dartAuth from './auth/auth';
-const auth = dartAuth({
-  service: 'http://localhost:9090',
-  prefix: '/api',
-  logoutRedirect: 'http://localhost:9090/',
-});
+import { requireAuth, requireSignin } from './services/passport';
 
 const router = Router();
 
@@ -22,33 +16,23 @@ router.get('/', (req, res) => {
 
 // User authentication
 router.post('/login', Users.login);
-router.get('/logout', auth, Users.logout);
+router.get('/logout', Users.logout);
 
 // User profile
-router.get('/user/profile', auth, Users.profile);
+router.get('/user/profile', requireAuth, Users.profile);
 
 // Groups
 router.route('/groups')
-  .get(auth, Groups.getGroups)
-  .post(auth, Groups.createGroup);
+  .get(requireAuth, Groups.getGroups)
+  .post(requireAuth, Groups.createGroup);
 
 router.route('/groups/:id')
-  .get(auth, Groups.getGroup);
+  .get(requireAuth, Groups.getGroup);
 
 // Main API routes
 router.route('/posts')
   .get((req, res) => {
     res.json({ message: 'lol' });
   });
-
-// your routes will go here
-// router.route('/posts')
-//   .get(Posts.getPosts)
-//   .post(Posts.createPost);
-
-// router.route('/posts/:id')
-//   .get(Posts.getPost)
-//   .put(Posts.updatePost)
-//   .delete(Posts.deletePost);
 
 export default router;
