@@ -18,7 +18,6 @@ function tokenForUser(user) {
 }
 
 export const login = (req, res) => {
-  console.log('Test');
   if (req.body.ticket) {
     cas.validate(req.body.ticket, (err, status, username, extended) => {
       if (err) {

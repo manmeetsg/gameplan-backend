@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as Users from './controllers/user_controller';
 import * as Groups from './controllers/group_controller';
-import { requireAuth, requireSignin } from './services/passport';
+import { requireAuth } from './services/passport';
 
 const router = Router();
 
@@ -27,7 +27,8 @@ router.route('/groups')
   .post(requireAuth, Groups.createGroup);
 
 router.route('/groups/:id')
-  .get(requireAuth, Groups.getGroup);
+  .get(requireAuth, Groups.getGroup)
+  .delete(requireAuth, Groups.deleteGroup);
 
 // Main API routes
 router.route('/posts')
