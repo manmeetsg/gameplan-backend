@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as Users from './controllers/user_controller';
+import * as Groups from './controllers/group_controller';
 
 import dartAuth from './auth/auth';
 const auth = dartAuth({
@@ -19,8 +20,20 @@ router.get('/', (req, res) => {
   }
 });
 
-router.get('/login', auth, Users.login);
+// User authentication
+router.post('/login', Users.login);
 router.get('/logout', auth, Users.logout);
+
+// User profile
+router.get('/user/profile', auth, Users.profile);
+
+// Groups
+router.route('/groups')
+  .get(auth, Groups.getGroups)
+  .post(auth, Groups.createGroup);
+
+router.route('/groups/:id')
+  .get(auth, Groups.getGroup);
 
 // Main API routes
 router.route('/posts')
