@@ -7,7 +7,7 @@ dotenv.config({ silent: true });
 import CAS from '../auth/cas';
 const cas = new CAS({
   base_url: 'https://login.dartmouth.edu/cas',
-  service: 'http://localhost:8080/login',
+  service: 'http://gameplan.surge.sh/login',
   version: 2.0,
 });
 
