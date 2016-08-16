@@ -3,9 +3,8 @@ import Post from '../models/post_model';
 export const createPost = (req, res) => {
   const post = new Post();
   post.title = req.body.title;
-  post.tags = req.body.tags.split(' ');
-  post.content = req.body.content;
-  post.author = req.user._id;
+  post.description = req.body.description;
+  // post.author = req.user._id;
 
   post.save()
   .then(result => {
@@ -24,8 +23,8 @@ export const getPosts = (req, res) => {
       res.json(posts.map(post => {
         return {
           id: post._id,
-          tags: post.tags,
           title: post.title,
+          description: post.description,
         };
       }));
     }
@@ -38,10 +37,9 @@ export const getPost = (req, res) => {
   .then(post => {
     res.json({
       id: post._id,
-      tags: post.tags,
       title: post.title,
-      content: post.content,
-      author: post.author,
+      description: post.description,
+      // author: post.author,
     });
   })
   .catch(err => {

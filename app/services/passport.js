@@ -17,7 +17,7 @@ dotenv.config({ silent: true });
 // so passport can find it there
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-  secretOrKey: process.env.SECRET,
+  secretOrKey: process.env.API_SECRET,
 };
 
 const jwtLogin = new JwtStrategy(jwtOptions, (payload, done) => {

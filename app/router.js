@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as Users from './controllers/user_controller';
 import * as Groups from './controllers/group_controller';
+import * as Posts from './controllers/post_controller';
 import { requireAuth } from './services/passport';
 
 const router = Router();
@@ -32,8 +33,17 @@ router.route('/groups/:id')
 
 // Main API routes
 router.route('/posts')
-  .get((req, res) => {
-    res.json({ message: 'lol' });
-  });
+  // .get((req, res) => {
+  //   res.json({ message: 'lol' });
+  // });
+  .get(requireAuth, Posts.getPosts)
+  .post(requireAuth, Posts.createPost);
+
+
+router.route('/posts/:id')
+  .get(requireAuth, Posts.getPost)
+  .put(requireAuth, Posts.updatePost)
+  .delete(requireAuth, Posts.deletePost);
+
 
 export default router;
