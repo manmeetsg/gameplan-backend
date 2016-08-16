@@ -10,4 +10,4 @@ Authentication through CAS:
  
 Travis CI Screenshot:
 
-[Dev Site Screenshot](./TravisCIScreenshot)
+[Dev Site Screenshot](./TravisCIScreenshot.tiff)
