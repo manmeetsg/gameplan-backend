@@ -3,6 +3,9 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 
+import dotenv from 'dotenv';
+dotenv.config({ silent: true });
+
 // Security
 import session from 'express-session';
 
@@ -25,7 +28,7 @@ app.use(bodyParser.json());
 
 // Security
 app.use(session({
-  secret: 'gameplan secret key',
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
 }));

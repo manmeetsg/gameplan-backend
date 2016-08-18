@@ -5,9 +5,8 @@ import moment from 'moment';
 const PostSchema = new Schema(
   {
     title: String,
-    content: String,
+    description: String,
     author: { type: Schema.Types.ObjectId, ref: 'User' },
-    tags: [String],
     groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }],
     chat: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
     responders: [{ type: Schema.Types.ObjectId, ref: 'User' }],

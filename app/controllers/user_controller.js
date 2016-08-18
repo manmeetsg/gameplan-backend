@@ -7,7 +7,7 @@ dotenv.config({ silent: true });
 import CAS from '../auth/cas';
 const cas = new CAS({
   base_url: 'https://login.dartmouth.edu/cas',
-  service: 'http://gameplan.surge.sh/login',
+  service: 'http://gameplan.surge.sh/login', // 'http://localhost:8080/login'
   version: 2.0,
 });
 
@@ -71,10 +71,19 @@ export const profile = (req, res) => {
     res.json({
       name: user.name,
       active_posts: user.active_posts,
-      groups: user.groups,
     });
   })
   .catch(err => {
-    console.log(err);
+    res.json({ message: `Error: ${err}` });
+  });
+};
+
+export const getUsers = (req, res) => {
+  User.find()
+  .then(users => {
+    res.json(users);
+  })
+  .catch(err => {
+    res.json({ message: `Error: ${err}` });
   });
 };

@@ -1,11 +1,13 @@
 import Post from '../models/post_model';
+import Group from '../models/group_model';
 
 export const createPost = (req, res) => {
   const post = new Post();
   post.title = req.body.title;
-  post.tags = req.body.tags.split(' ');
-  post.content = req.body.content;
+  post.description = req.body.description;
   post.author = req.user._id;
+  post.groups = req.body.groups;
+  post.responders = [req.user._id];
 
   post.save()
   .then(result => {
@@ -17,18 +19,36 @@ export const createPost = (req, res) => {
 };
 
 export const getPosts = (req, res) => {
-  Post.find().sort('-created_at').exec((err, posts) => {
-    if (err) {
+  Group.find({ members: req.user._id })
+  .then(groups => {
+    Post.find({ groups: { $in: groups.map(group => { return group._id; }) } })
+    .sort('-created_at')
+    .populate('author')
+    .populate('responders')
+    .populate('groups')
+    .then(posts => {
+      res.json(posts);
+    })
+    .catch(err => {
       res.json({ message: `Error: ${err}` });
-    } else {
-      res.json(posts.map(post => {
-        return {
-          id: post._id,
-          tags: post.tags,
-          title: post.title,
-        };
-      }));
-    }
+    });
+  })
+  .catch(err => {
+    res.json({ message: `Error: ${err}` });
+  });
+};
+
+export const getGroupPosts = (req, res) => {
+  Post.find({ groups: req.params.id })
+  .sort('-created_at')
+  .populate('author')
+  .populate('responders')
+  .populate('groups')
+  .then(post => {
+    res.json(post);
+  })
+  .catch(err => {
+    res.json({ message: `Error: ${err}` });
   });
 };
 
@@ -38,7 +58,6 @@ export const getPost = (req, res) => {
   .then(post => {
     res.json({
       id: post._id,
-      tags: post.tags,
       title: post.title,
       content: post.content,
       author: post.author,

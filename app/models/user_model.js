@@ -5,7 +5,6 @@ const UserSchema = new Schema(
   {
     name: String,
     netID: String,
-    groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }],
     active_posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
   },
   {
