@@ -4,6 +4,7 @@ import mongoose, { Schema } from 'mongoose';
 const GroupSchema = new Schema(
   {
     name: String,
+    description: String,
     owner: { type: Schema.Types.ObjectId, ref: 'User' },
     members: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   },

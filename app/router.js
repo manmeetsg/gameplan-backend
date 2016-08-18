@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as Users from './controllers/user_controller';
 import * as Groups from './controllers/group_controller';
+import * as Posts from './controllers/post_controller';
 import { requireAuth } from './services/passport';
 
 const router = Router();
@@ -18,8 +19,9 @@ router.get('/', (req, res) => {
 router.post('/login', Users.login);
 router.get('/logout', Users.logout);
 
-// User profile
-router.get('/user/profile', requireAuth, Users.profile);
+// Users
+router.get('/users', requireAuth, Users.getUsers);
+router.get('/users/profile', requireAuth, Users.profile);
 
 // Groups
 router.route('/groups')
@@ -28,12 +30,15 @@ router.route('/groups')
 
 router.route('/groups/:id')
   .get(requireAuth, Groups.getGroup)
+  .put(requireAuth, Groups.updateGroup)
   .delete(requireAuth, Groups.deleteGroup);
 
-// Main API routes
+// Posts
 router.route('/posts')
-  .get((req, res) => {
-    res.json({ message: 'lol' });
-  });
+  .get(requireAuth, Posts.getPosts)
+  .post(requireAuth, Posts.createPost);
+
+router.route('/posts/group/:id')
+  .get(requireAuth, Posts.getGroupPosts);
 
 export default router;

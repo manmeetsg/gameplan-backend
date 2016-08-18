@@ -2,15 +2,12 @@ import Group from '../models/group_model';
 import User from '../models/user_model';
 
 export const getGroups = (req, res) => {
-  const netID = req.user.netID;
-
-  User.findOne({ netID })
-  .populate('groups')
-  .then(user => {
-    res.json(user.groups);
+  Group.find({ members: req.user._id })
+  .then(groups => {
+    res.json(groups);
   })
   .catch(err => {
-    console.log(err);
+    res.json({ message: `Error: ${err}` });
   });
 };
 
@@ -21,7 +18,7 @@ export const getGroup = (req, res) => {
     res.json(group);
   })
   .catch(err => {
-    console.log(err);
+    res.json({ message: `Error: ${err}` });
   });
 };
 
@@ -40,23 +37,37 @@ export const createGroup = (req, res) => {
   // Create the group, with the creator as the owner and single member
   const group = new Group();
   group.name = req.body.name;
+  group.description = req.body.description;
   group.owner = req.user._id;
   group.members = [req.user._id];
 
   group.save()
   .then(result => {
     User.findOneAndUpdate({ netID: req.user.netID }, {
-      groups: [result._id],
+      $push: { groups: result._id },
     })
     .then(user => {
       // Successfully added
       res.json({ message: 'Group created!' });
     })
-    .catch(error => {
-      console.log(error);
+    .catch(err => {
+      res.json({ message: `Error: ${err}` });
     });
   })
-  .catch(error => {
-    console.log(error);
+  .catch(err => {
+    res.json({ message: `Error: ${err}` });
+  });
+};
+
+export const updateGroup = (req, res) => {
+  // Update group with information, return updated group
+  Group.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true })
+  .populate('members')
+  .exec((err, group) => {
+    if (err) {
+      res.json({ message: `Error: ${err}` });
+    } else {
+      res.json(group);
+    }
   });
 };
