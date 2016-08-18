@@ -87,3 +87,13 @@ export const getUsers = (req, res) => {
     res.json({ message: `Error: ${err}` });
   });
 };
+
+export const getMe = (req, res) => {
+  User.findOne({ _id: req.user._id })
+  .then(user => {
+    res.json(user);
+  })
+  .catch(err => {
+    res.json({ message: `Error: ${err}` });
+  });
+};
