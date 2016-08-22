@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-// create a schema for posts
+// create a schema for messsages
 const MessageSchema = new Schema(
   {
     text: String,

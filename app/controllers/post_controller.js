@@ -1,5 +1,6 @@
 import Post from '../models/post_model';
 import Group from '../models/group_model';
+import Message from '../models/message_model';
 
 export const createPost = (req, res) => {
   const post = new Post();
@@ -55,13 +56,13 @@ export const getGroupPosts = (req, res) => {
 export const getPost = (req, res) => {
   Post.findById(req.params.id)
   .populate('author')
+  .populate('responders')
+  .populate({
+    path: 'chat',
+    populate: { path: 'poster' },
+  })
   .then(post => {
-    res.json({
-      id: post._id,
-      title: post.title,
-      content: post.content,
-      author: post.author,
-    });
+    res.json(post);
   })
   .catch(err => {
     res.json({ message: `Error: ${err}` });
@@ -79,11 +80,47 @@ export const deletePost = (req, res) => {
 };
 
 export const updatePost = (req, res) => {
-  Post.findOneAndUpdate({ _id: req.params.id }, req.body, (err) => {
+  Post.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true })
+  .populate('author')
+  .populate('responders')
+  .populate({
+    path: 'chat',
+    populate: { path: 'poster' },
+  })
+  .exec((err, post) => {
     if (err) {
       res.json({ message: `Error: ${err}` });
     } else {
-      res.json({ message: 'Updated!' });
+      res.json(post);
     }
+  });
+};
+
+export const addComment = (req, res) => {
+  const message = new Message();
+  message.poster = req.user._id;
+  message.text = req.body.text;
+
+  message.save()
+  .then(result => {
+    Post.findOneAndUpdate({ _id: req.params.id }, {
+      $push: { chat: result._id },
+    }, { new: true })
+    .populate('author')
+    .populate('responders')
+    .populate({
+      path: 'chat',
+      populate: { path: 'poster' },
+    })
+    .exec((err, post) => {
+      if (err) {
+        res.json({ message: `Error: ${err}` });
+      } else {
+        res.json(post);
+      }
+    });
+  })
+  .catch(err => {
+    res.json({ message: `Error: ${err}` });
   });
 };

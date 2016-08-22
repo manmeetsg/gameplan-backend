@@ -59,10 +59,6 @@ export const login = (req, res) => {
   }
 };
 
-export const logout = (req, res) => {
-  res.send('Logged out.');
-};
-
 export const profile = (req, res) => {
   const netID = req.session.auth.netid;
 

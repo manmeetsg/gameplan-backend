@@ -17,7 +17,6 @@ router.get('/', (req, res) => {
 
 // User authentication
 router.post('/login', Users.login);
-router.get('/logout', Users.logout);
 
 // Users
 router.get('/users', requireAuth, Users.getUsers);
@@ -38,6 +37,11 @@ router.route('/groups/:id')
 router.route('/posts')
   .get(requireAuth, Posts.getPosts)
   .post(requireAuth, Posts.createPost);
+
+router.route('/posts/:id')
+  .get(requireAuth, Posts.getPost)
+  .put(requireAuth, Posts.updatePost)
+  .post(requireAuth, Posts.addComment);
 
 router.route('/posts/group/:id')
   .get(requireAuth, Posts.getGroupPosts);
