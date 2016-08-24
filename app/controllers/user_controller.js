@@ -61,6 +61,7 @@ export const login = (req, res) => {
 
 export const getUsers = (req, res) => {
   User.find()
+  .sort('name')
   .then(users => {
     res.json(users);
   })
