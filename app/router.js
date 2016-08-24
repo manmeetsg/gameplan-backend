@@ -41,7 +41,8 @@ router.route('/posts')
 router.route('/posts/:id')
   .get(requireAuth, Posts.getPost)
   .put(requireAuth, Posts.updatePost)
-  .post(requireAuth, Posts.addComment);
+  .post(requireAuth, Posts.addComment)
+  .delete(requireAuth, Posts.deletePost);
 
 router.route('/posts/group/:id')
   .get(requireAuth, Posts.getGroupPosts);
