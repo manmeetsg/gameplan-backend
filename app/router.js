@@ -21,7 +21,6 @@ router.post('/login', Users.login);
 // Users
 router.get('/users', requireAuth, Users.getUsers);
 router.get('/users/me', requireAuth, Users.getMe);
-router.get('/users/profile', requireAuth, Users.profile);
 
 // Groups
 router.route('/groups')

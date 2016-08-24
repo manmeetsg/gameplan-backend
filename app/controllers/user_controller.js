@@ -59,21 +59,6 @@ export const login = (req, res) => {
   }
 };
 
-export const profile = (req, res) => {
-  const netID = req.session.auth.netid;
-
-  User.findOne({ netID })
-  .then(user => {
-    res.json({
-      name: user.name,
-      active_posts: user.active_posts,
-    });
-  })
-  .catch(err => {
-    res.json({ message: `Error: ${err}` });
-  });
-};
-
 export const getUsers = (req, res) => {
   User.find()
   .then(users => {
