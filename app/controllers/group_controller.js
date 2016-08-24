@@ -39,7 +39,7 @@ export const createGroup = (req, res) => {
   group.name = req.body.name;
   group.description = req.body.description;
   group.owner = req.user._id;
-  group.members = [req.user._id];
+  group.members = req.body.members;
 
   group.save()
   .then(result => {
